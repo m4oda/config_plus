@@ -1,0 +1,8 @@
+setting_a:
+  foo: Lorem ipsum
+  baa: dolor sit amet
+  baz: consectetur adipiscing elit
+setting_b:
+  toto: sed do eiusmod
+  titi: tempor incididunt
+  tata: labore et dolore

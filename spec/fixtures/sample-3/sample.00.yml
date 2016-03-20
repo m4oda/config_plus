@@ -1,0 +1,5 @@
+sample:
+  setting_a:
+    spam: spam-00
+    ham: ham-00
+    egg: egg-00
