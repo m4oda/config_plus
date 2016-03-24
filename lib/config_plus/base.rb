@@ -2,7 +2,7 @@ module ConfigPlus
   class << self
     attr_reader :root
 
-    # sets up configuration of ++ConfigPlus++ and load data
+    # Sets up configuration of ++ConfigPlus++ and loads data
     #
     # When a YAML file path is specified with
     # ++source++ (or ++root_dir++) setting as below,
@@ -21,16 +21,19 @@ module ConfigPlus
       load
     end
 
-    # sets up configuration of ++ConfigPlus++ and load data
+    # Sets up configuration of ++ConfigPlus++ and loads data
     #
     # You can describe the following code, when it needs
     # only a single file for a resource of ++ConfigPlus++.
     #
     #  ConfigPlus.generate(from: '/path/to/yaml/file.yml')
     #
-    def generate(from: nil, &block)
+    def generate(from: nil, **properties)
       config.source = from if from
-      config.instance_eval(&block) if block_given?
+      properties.each do |k, v|
+        attr = "#{k}="
+        config.public_send(attr, v) if config.respond_to? attr
+      end
       load
     end
 
