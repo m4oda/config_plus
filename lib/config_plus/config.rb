@@ -20,23 +20,31 @@ module ConfigPlus
     # ++root_dir++ settings.
     #
     def load_source
-      path = source_path
-      raise "No specified `source'" unless path
-      hash = load_with_source_setting
-      hash = hash[@namespace] if @namespace
-      hash
+      pathes = source_pathes
+      raise "No specified `source'" if pathes.empty?
+      pathes.each.inject({}) do |h, path|
+        hash = load_with_filepath(path)
+        hash = hash[@namespace.to_s] if @namespace
+        Merger.merge(h, hash)
+      end
     end
 
     protected
 
-    def source_path
-      return @source unless @root_dir
-      return @root_dir unless @source
-      File.join(@root_dir, @source)
+    def source_pathes
+      Array(@source).map {|s|
+        source_path(s)
+      }.reverse.uniq.compact.reverse
     end
 
-    def load_with_source_setting
-      path = source_path
+    def source_path(filepath)
+      return filepath unless @root_dir
+      return @root_dir unless filepath
+      return filepath if filepath.start_with?('/')
+      File.join(@root_dir, filepath)
+    end
+
+    def load_with_filepath(path)
       return read_file(path) if File.file?(path)
       read_files(path)
     end
