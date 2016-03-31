@@ -1,6 +1,8 @@
 require 'config_plus/base'
 require 'config_plus/config'
+require 'config_plus/default_loader_logic'
 require 'config_plus/helper'
+require 'config_plus/loader'
 require 'config_plus/merger'
 require 'config_plus/node'
 require 'config_plus/version'

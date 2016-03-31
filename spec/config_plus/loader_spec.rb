@@ -1,7 +1,8 @@
 require 'spec_helper'
 
-RSpec.describe ConfigPlus::Config, '#load_source' do
-  let(:config) { described_class.new }
+RSpec.describe ConfigPlus::Loader, '#load' do
+  let(:config) { ConfigPlus::Config.new }
+  let(:loader) { described_class.new(config) }
 
   let(:hash_1) do
     {
@@ -37,8 +38,7 @@ RSpec.describe ConfigPlus::Config, '#load_source' do
 
   context "with settings of no `source' and no `root_dir'" do
     it 'raises RuntimeError' do
-      expect { config.load_source }.
-        to raise_error("No specified `source'")
+      expect { loader.load }.to raise_error("No specified `source'")
     end
   end
 
@@ -49,7 +49,7 @@ RSpec.describe ConfigPlus::Config, '#load_source' do
     end
 
     it 'returns the expected hash' do
-      actual = config.load_source
+      actual = loader.load
       expect(actual).to eq hash_1
     end
 
@@ -59,7 +59,7 @@ RSpec.describe ConfigPlus::Config, '#load_source' do
       end
 
       it "returns a hash associated with the namespace key" do
-        actual = config.load_source
+        actual = config.loader.load
         expect(actual).to eq hash_1['setting_a']
       end
     end
@@ -72,7 +72,7 @@ RSpec.describe ConfigPlus::Config, '#load_source' do
     end
 
     it 'returns the expected hash' do
-      actual = config.load_source
+      actual = loader.load
       expect(actual).to eq hash_2
     end
 
@@ -82,7 +82,7 @@ RSpec.describe ConfigPlus::Config, '#load_source' do
       end
 
       it "returns a hash associated with the namespace key" do
-        actual = config.load_source
+        actual = loader.load
         expect(actual).to eq hash_2['setting_b']
       end
     end

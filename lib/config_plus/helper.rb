@@ -25,10 +25,10 @@ module ConfigPlus
       private
 
       def matched_configs(object, node)
-        klass = object.is_a?(Class) ? object : object.class
-        path = underscore(klass.name)
+        mod = object.is_a?(Module) ? object : object.class
+        path = underscore(mod.name)
 
-        [node[klass.name],
+        [node[mod.name],
          node[path],
          node.get(path),
         ].uniq.compact

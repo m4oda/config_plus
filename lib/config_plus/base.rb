@@ -45,8 +45,12 @@ module ConfigPlus
 
     private
 
+    # loads a configuration data as a hash object
+    # from files specified with ++source++ or 
+    # ++root_dir++ settings.
+    #
     def load
-      hash = config.load_source
+      hash = config.loader.load
       @root = ::ConfigPlus::Node.new(hash)
     end
   end
