@@ -60,15 +60,23 @@ module ConfigPlus
     return unless method_name
     variable_name = "@#{method_name}"
     helper = ::ConfigPlus::Helper
+    own = helper.config_for(base, ::ConfigPlus.root)
+
+    inheritance = base.ancestors.select {|klass|
+      klass != base and
+      klass != ConfigPlus and
+      klass.ancestors.include?(ConfigPlus)
+    }.reverse.each_with_object({}) {|klass, hsh|
+      h = klass.public_send(method_name)
+      h = helper.config_for(klass, ::ConfigPlus.root) unless
+        h or h.is_a?(Hash)
+      hsh.merge!(h)
+    }
 
     [base, base.singleton_class].each do |obj|
       obj.instance_eval do
-        define_method method_name, -> {
-          config = instance_variable_get(variable_name)
-          return config if config
-          config = helper.config_for(self, ::ConfigPlus.root)
-          instance_variable_set(variable_name, config)
-        }
+        config = inheritance ? inheritance.merge(own || {}) : own
+        define_method method_name, -> { config }
       end
     end
   end

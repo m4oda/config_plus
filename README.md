@@ -1,14 +1,15 @@
 ConfigPlus
-==================================================
+============================================================
 
-`ConfigPlus` は YAML ファイルから設定情報を読み込むためのライブラリです。
-読み込みたい YAML ファイルのパスを指定すると、`ConfigPlus.root` から設定情報にアクセスできるようになります。
+An easy-to-use, powerful configuration module using YAML files
+for Ruby.
 
-基本的な使用例
---------------------------------------------------
-例として、次のような YAML ファイルがあるとすると、
 
-```yaml
+Simple Usage
+------------------------------------------------------------
+Add a configuration file in YAML format in your project:
+
+```yml
 foo:
   baa:
     baz:
@@ -16,122 +17,130 @@ foo:
       ham: abc
 ```
 
-次のようにアクセスできます。
+You can access the configuration values with `ConfigPlus.root`:
 
 ```ruby
 ConfigPlus.generate(from: '/path/to/configuration/file.yml')
-ConfigPlus.root[:foo][:baa][:baz]
-#=> {"spam"=>123, "ham"=>"abc"}
+ConfigPlus.root.foo.baa.baz.spam
+#=> 123
 
-ConfigPlus.root['foo']['baa']['baz']
-#=> {"spam"=>123, "ham"=>"abc"}
+ConfigPlus.root['foo']['baa']['baz']['spam']
+#=> 123
 
-ConfigPlus.root.foo.baa.baz
-#=> {"spam"=>123, "ham"=>"abc"}
+ConfigPlus.root[:foo][:baa][:baz][:spam]
+#=> 123
 
-ConfigPlus.root.get('foo.baa.baz')
-#=> {"spam"=>123, "ham"=>"abc"}
+ConfigPlus.root.get('foo.baa.baz.spam')
+#=> 123
 ```
 
-メソッド風のアクセスには多少の制限があります。
-キーがメソッド名として有効である必要があるのはもちろんのこと、private
-メソッドも含めて既存のメソッド名と重複した場合は、既存のメソッドの方が有効になります。
-
-`ConfigPlus.root` は `Hash` を拡張したオブジェクトなので、
-おおよそ `Hash` のメソッドを上書きできない（正確には `ConfigPlus::Node`
-のメソッドを上書きできない）、ということになります。
-
-自動マッピング
---------------------------------------------------
-YAML の構造と同じパスを持つクラス（上記の場合であれば `Foo::Baa::Baz` というクラス）がある場合、
-次のようにして設定情報にアクセスすることもできます。
+`ConfigPlus` recurses a file tree looking for configuration files
+when you specify a directory path at `ConfigPlus.generate from:`.
 
 ```ruby
-module Foo
-  module Baa
-    class Baz
-      include ConfigPlus
-    end
+ConfigPlus.generate(from: '/path/to/configuration/directory')
+```
+
+And you can specify some pathes using an array.
+
+```ruby
+ConfigPlus.generate(from: ['/path/to/directory1', '/path/to/file1.yml'])
+```
+
+
+Auto Mapping
+------------------------------------------------------------
+When data structure of loaded YAML and class structure of your
+Ruby project have the same hierarchy, accessing the configuration
+can be more simple:
+
+```yml
+fizz:
+  buzz:
+    spam: bacon
+    ham: sausage
+```
+
+```ruby
+ConfigPlus.generate(from: '/path/to/configuration/file.yml')
+
+module Fizz
+  class Buzz
+    include ConfigPlus
   end
 end
 
-Foo::Baa::Baz.config
-#=> {"spam"=>123, "ham"=>"abc"}
+Fizz::Buzz.config.ham
+#=> "sausage"
 
-Foo::Baa::Baz.config.spam
-#=> 123
-
-baz = Foo::Baa::Baz.new
-baz.config.ham
-#=> "abc"
+buzz = Fizz:Buzz.new
+buzz.config.spam
+#=> "bacon"
 ```
 
-`ConfigPlus` を `include` することで、クラスメソッドとインスタンスメソッドに
-`config` というメソッドが追加されます（このメソッド名は設定で変更できます）。
-そこから、読み込んだ設定情報にアクセスできるようになります。
 
-上書きマージ
---------------------------------------------------
-`ConfigPlus` に読み込ませるパスには、ディレクトリを指定することもできます。
-ディレクトリを指定した場合は、サブディレクトリも含めてファイルが探索され、
-その中から拡張子がマッチしたものが全て読み込まれます。
-読み込まれた YAML は、最終的に一つにマージされた Hash となります。
-
-設定ファイルはファイル名でソートされた上で読み込まれ、マージされます。
-このため、同じ設定情報があればソート順の大きい方で上書きされます。
-
-例として、次のようなファイルが同じディレクトリに配置されていたとすると、
+Overwrite Merge
+------------------------------------------------------------
+`ConfigPlus` loads the specified configuration files in file
+name order and merge all of configuration into a single hash.
 
 ```yml
 # sample-00.yml
+
 sample:
   setting_a:
-    spam: spam-00
-    ham: ham-00
-    egg: egg-00
+    spam: bacon
+    ham: sausage
+    egg: baked beans
 ```
 
 ```yml
 # sample-01.yml
+
 sample:
   setting_a:
-    ham: ham-01
+    ham: spam
 ```
-
-`sample-00.yml` がベースとなり、そこに `sample-01.yml` が上書きされて読み込まれます。
 
 ```ruby
 Sample::SettingA.config
-#=> {"spam"=>"spam-00", "ham"=>"ham-01", "egg"=>"egg-00"}
+#=> {"spam"=>"bacon", "ham"=>"spam", "egg"=>"baked beans"}
 ```
 
-その他
---------------------------------------------------
-`ConfigPlus` の動作は設定で変更できます。
-設定ファイルへのパス以外の設定がある場合、次のようにブロックを使って記述します。
+
+Others
+------------------------------------------------------------
+Settings of `ConfigPlus` can be changed by the following way:
 
 ```ruby
 ConfigPlus.configure do |conf|
   conf.root_dir      = Rails.root
   conf.source        = 'config/config_plus'
-  conf.namespace     = Rails.env
-  conf.loader        = {extensions: '00.yml'}
   conf.config_method = :setting
+  conf.extension     = [:yml, :yaml]
+  conf.namespace     = Rails.env
 end
 ```
 
-`configure` メソッドは `generate` とほぼ同じ処理をするので、上記のように書けば改めて `generate` する必要はありません。
+`configure` method works in a similar way as `generate` method.
+Properties you can set are following:
 
-主な設定を簡単に説明すると、次のようになります。
+* `config_method`
+  * a method name to access configuration using in a class
+    which does `include ConfigPlus`
+* `extension`
+  * extensions of configuration files which you allow to be
+    loaded when you specify a directory path as `source`
+* `namespace`
+  * load configuration only from a tree of which first
+    hierarchy key name is matched with the specified name
+* `root_dir`
+  * used as a parent directory path when you specify a
+    relative path as `source`
+* `source`
+  * a file path or a directory path or an array of them
 
-| 設定            | 概要説明                                                             | 初期値            |
-| --------------- | -------------------------------------------------------------------- | ----------------- |
-| `config_method` | `include ConfigPlus` で自動マッピングした際の設定読み込みメソッド名  | `config`          |
-| `loader`        | 読み込むファイルの拡張子（`extensions`）                             | `['yml', 'yaml']` |
-| `namespace`     | 使用するネームスペース                                               |                   |
-| `root_dir`      | `source` で指定するパスの親ディレクトリのパス                        |                   |
-| `source`        | 設定ファイル、またはそれが格納されているディレクトリのパス           |                   |
 
-ライセンス
---------------------------------------------------
-`ConfigPlus` は MIT ライセンスです。
+License
+------------------------------------------------------------
+MIT License

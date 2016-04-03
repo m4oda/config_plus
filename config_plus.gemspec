@@ -1,15 +1,16 @@
-require File.dirname(__FILE__) + 'lib/config_plus'
+$: << File.dirname(File.expand_path(__FILE__)) + '/lib'
+require 'config_plus'
 
 Gem::Specification.new do |s|
   s.name          = 'config_plus'
   s.version       = ConfigPlus::VERSION
-  s.summary       = ''
-  s.description   = ''
-  s.authors       = ['']
-  s.email         = ''
-  s.files         = ['/lib/config_plus.rb']
-  s.homepage      = ''
+  s.summary       = 'An easy-to-use, powerful configuration module using YAML files'
+  s.description   = 'ConfigPlus is an easy-to-use configuration module that uses YAML files and has powerful features such as auto mapping.'
+  s.authors       = ['m4oda']
+  s.email         = 'e5ww2sze@gmail.com'
+  s.files         = `git ls-files lib`.split($\) + ["README.md", "README.ja.md"]
+  s.homepage      = 'https://github.com/m4oda/config_plus'
   s.license       = 'MIT'
 
-  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rspec', '~> 3.4'
 end

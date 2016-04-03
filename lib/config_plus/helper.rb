@@ -25,6 +25,7 @@ module ConfigPlus
       private
 
       def matched_configs(object, node)
+        return [] unless node
         mod = object.is_a?(Module) ? object : object.class
         path = underscore(mod.name)
 

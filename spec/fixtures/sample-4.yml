@@ -1,0 +1,16 @@
+SettingA:
+  foo: 123
+  baa: 234
+  baz: 345
+SettingB:
+  toto: aaa
+  titi: bbb
+  tata: ccc
+SettingC:
+  pee: '?'
+  kaa: '??'
+  boo: '??!'
+SettingD:
+  foo: 987
+  baa: 876
+  baz: 765
