@@ -1,11 +1,15 @@
 SettingA:
   foo: 123
   baa: 234
-  baz: 345
+  baz:
+    spam: zzz
+    ham: xxx
 SettingB:
   toto: aaa
   titi: bbb
-  tata: ccc
+  tata:
+    xyzzy: '000'
+    zzyzx: '999'
 SettingC:
   pee: '?'
   kaa: '??'
@@ -13,4 +17,7 @@ SettingC:
 SettingD:
   foo: 987
   baa: 876
-  baz: 765
+  baz:
+    toto: piyo
+    titi: payo
+    tata: poyo

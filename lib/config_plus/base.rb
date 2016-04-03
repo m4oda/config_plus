@@ -4,17 +4,16 @@ module ConfigPlus
 
     # Sets up configuration of ++ConfigPlus++ and loads data
     #
-    # When a YAML file path is specified with
-    # ++source++ (or ++root_dir++) setting as below,
-    # configuration data would be loaded from the file.
+    # Set a YAML file path to ++source++ property and you can
+    # access its data with ++ConfigPlus.root++.
     #
     #  ConfigPlus.configure do |conf|
     #    conf.source = '/path/to/yaml/file.yml'
     #  end
     #
-    # When a directory path is specified, configuration
-    # would be loaded from all YAML files under the
-    # specified directory.
+    # When you set a directory path to ++source++,
+    # you get configuration data that is merged every contents
+    # of YAML files under the directory you specify.
     #
     def configure
       yield config if block_given?
@@ -37,48 +36,50 @@ module ConfigPlus
       load
     end
 
+    def included(base)
+      method_name = self.config.config_method
+      return unless method_name
+      own = self::Helper.config_for(base, self.root)
+      inheritance = inherited_config_of(base)
+
+      [base, base.singleton_class].each do |obj|
+        obj.instance_eval do
+          config = inheritance ?
+            ::ConfigPlus::Merger.merge(inheritance, own || {}) : own
+          config = ::ConfigPlus::Node.new(config)
+          define_method method_name, -> { config }
+        end
+      end
+    end
+
     protected
 
     def config
-      @config ||= ::ConfigPlus::Config.new
+      @config ||= self::Config.new
     end
 
     private
 
-    # loads a configuration data as a hash object
+    # Loads a configuration data as a hash object
     # from files specified with ++source++ or 
     # ++root_dir++ settings.
     #
     def load
       hash = config.loader.load
-      @root = ::ConfigPlus::Node.new(hash)
+      @root = self::Node.new(hash)
     end
-  end
 
-  def self.included(base)
-    method_name = self.config.config_method
-    return unless method_name
-    variable_name = "@#{method_name}"
-    helper = ::ConfigPlus::Helper
-    own = helper.config_for(base, ::ConfigPlus.root)
-
-    inheritance = base.ancestors.select {|klass|
-      klass != base and
-      klass != ConfigPlus and
-      klass.ancestors.include?(ConfigPlus)
-    }.reverse.each.inject({}) {|hsh, klass|
-      h = klass.public_send(method_name)
-      h = helper.config_for(klass, ::ConfigPlus.root) unless
-        h or h.is_a?(Hash)
-      Merger.merge(hsh, h)
-    }
-
-    [base, base.singleton_class].each do |obj|
-      obj.instance_eval do
-        config = inheritance ? inheritance.merge(own || {}) : own
-        config = ::ConfigPlus::Node.new(config)
-        define_method method_name, -> { config }
-      end
+    def inherited_config_of(klass)
+      klass.ancestors.select {|clazz|
+        clazz != klass and
+        clazz != self and
+        clazz.ancestors.include?(self)
+      }.reverse.each.inject({}) {|hsh, clazz|
+        h = clazz.public_send(self.config.config_method)
+        h = self::Helper.config_for(clazz, self.root) unless
+          h or h.is_a?(Hash)
+        self::Merger.merge(hsh, h)
+      }
     end
   end
 end

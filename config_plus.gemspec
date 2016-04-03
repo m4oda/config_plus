@@ -1,5 +1,4 @@
-$: << File.dirname(File.expand_path(__FILE__)) + '/lib'
-require 'config_plus'
+require File.expand_path('../lib/config_plus/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = 'config_plus'
