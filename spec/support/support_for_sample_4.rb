@@ -1,6 +1,13 @@
 RSpec.shared_context 'when loading sample-4' do
   let(:root_dir) { File.expand_path('../../..', __FILE__) }
 
+  let(:configuration_of_sample4) do
+    ->(config) do
+      config.root_dir = root_dir
+      config.source = 'spec/fixtures/sample-4.yml'
+    end
+  end
+
   let(:setting_a_hash) do
     {
       'foo' => 123,
@@ -103,4 +110,35 @@ RSpec.shared_examples 'configuration of SettingD' do
       expect(subject.tata).to eq 'poyo'
     end
   end
+end
+
+RSpec.shared_context "when a class includes ConfigPlus" do |klass|
+  before { Object.const_set(klass, Class.new).include ConfigPlus }
+  after { Object.class_eval { remove_const klass } }
+end
+
+RSpec.shared_context "when a module includes ConfigPlus" do |mod|
+  before { Object.const_set(mod, Module.new).include ConfigPlus }
+  after { Object.class_eval { remove_const mod } }
+end
+
+RSpec.shared_context "when Class A that inherits Class B includes ConfigPlus" do |class_a, class_b|
+  before do
+    parent = Object.const_get(class_b)
+    klass = Class.new(parent)
+    Object.const_set(class_a, klass).include ConfigPlus
+  end
+
+  after { Object.class_eval { remove_const class_a } }
+end
+
+RSpec.shared_context "when Class A that includes Module B includes ConfigPlus" do |class_a, module_b|
+  before do
+    mod = Object.const_get(module_b)
+    klass = Class.new
+    klass.include(mod)
+    Object.const_set(class_a, klass).include ConfigPlus
+  end
+
+  after { Object.class_eval { remove_const class_a } }
 end
