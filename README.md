@@ -41,7 +41,7 @@ when you specify a directory path at `ConfigPlus.generate from:`.
 ConfigPlus.generate(from: '/path/to/configuration/directory')
 ```
 
-And you can specify some pathes using an array.
+And you can specify some paths using an array.
 
 ```ruby
 ConfigPlus.generate(from: ['/path/to/directory1', '/path/to/file1.yml'])
@@ -82,7 +82,7 @@ buzz.config.spam
 Overwrite Merge
 ------------------------------------------------------------
 `ConfigPlus` loads the specified configuration files in file
-name order and merge all of configuration into a single hash.
+name order and merges all of configuration into a single hash.
 
 ```yml
 # sample-00.yml
