@@ -66,16 +66,17 @@ module ConfigPlus
       klass != base and
       klass != ConfigPlus and
       klass.ancestors.include?(ConfigPlus)
-    }.reverse.each_with_object({}) {|klass, hsh|
+    }.reverse.each.inject({}) {|hsh, klass|
       h = klass.public_send(method_name)
       h = helper.config_for(klass, ::ConfigPlus.root) unless
         h or h.is_a?(Hash)
-      hsh.merge!(h)
+      Merger.merge(hsh, h)
     }
 
     [base, base.singleton_class].each do |obj|
       obj.instance_eval do
         config = inheritance ? inheritance.merge(own || {}) : own
+        config = ::ConfigPlus::Node.new(config)
         define_method method_name, -> { config }
       end
     end
