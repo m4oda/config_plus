@@ -15,6 +15,8 @@ module ConfigPlus
       end
 
       def underscore(name)
+        return name.underscore if name.respond_to?(:underscore)
+
         name.gsub(/::/, '.')
           .gsub(/((\A|\b)([A-Z]+))|([A-Z]+)/) do
           next $3.downcase if $3
