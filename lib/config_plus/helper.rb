@@ -24,6 +24,12 @@ module ConfigPlus
         end
       end
 
+      def classify(name)
+        return name.classify if name.respond_to?(:classify)
+        name.to_s.gsub(/\/+/, '::')
+          .gsub(/_?([a-z]+)/) { $1.capitalize }
+      end
+
       private
 
       def matched_configs(object, node)

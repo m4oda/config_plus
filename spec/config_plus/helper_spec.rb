@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe ConfigPlus::Helper, '#underscore' do
+RSpec.describe ConfigPlus::Helper, '.underscore' do
   context "with string `Foo'" do
     it "returns `foo'" do
       actual = described_class.underscore('Foo')
@@ -30,8 +30,23 @@ RSpec.describe ConfigPlus::Helper, '#underscore' do
   end
 end
 
+RSpec.describe ConfigPlus::Helper, '.classify' do
+  context "with string `foo_baa_baz'" do
+    it "returns `FooBaaBaz'" do
+      actual = described_class.classify('foo_baa_baz')
+      expect(actual).to eq 'FooBaaBaz'
+    end
+  end
 
-RSpec.describe ConfigPlus::Helper, '#config_for' do
+  context "with string `foo_baa/bazz_fizz'" do
+    it "returns `FooBaa::BazzFizz'" do
+      actual = described_class.classify('foo_baa/bazz_fizz')
+      expect(actual).to eq 'FooBaa::BazzFizz'
+    end
+  end
+end
+
+RSpec.describe ConfigPlus::Helper, '.config_for' do
   context "with a class and a Node has the class named key" do
     let(:klass) { Object::Foo = Class.new }
     let(:node) { ConfigPlus::Node.new('foo' => {'a' => 123}) }

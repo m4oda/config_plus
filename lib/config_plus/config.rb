@@ -23,11 +23,13 @@ module ConfigPlus
     end
 
     def loader_logic
-      name = @loader_logic.to_s.capitalize
+      return @loader_logic if @loader_logic.is_a?(Class)
+
+      name = ::ConfigPlus::Helper.classify(@loader_logic.to_s)
       name = "#{name}LoaderLogic"
       raise "Unknown loader logic named `#{name}'" unless
-        ConfigPlus::const_defined?(name)
-      ConfigPlus::const_get(name)
+        ::ConfigPlus::const_defined?(name)
+      ::ConfigPlus::const_get(name)
     end
   end
 end
