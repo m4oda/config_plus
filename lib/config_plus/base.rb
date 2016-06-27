@@ -36,22 +36,6 @@ module ConfigPlus
       load
     end
 
-    def included(base)
-      method_name = self.config.config_method
-      return unless method_name
-      own = self::Helper.config_for(base, self.root)
-      inheritance = inherited_config_of(base)
-
-      [base, base.singleton_class].each do |obj|
-        obj.instance_eval do
-          config = inheritance ?
-            ::ConfigPlus::Merger.merge(inheritance, own || {}) : own
-          config = ::ConfigPlus::Node.new(config)
-          define_method method_name, -> { config }
-        end
-      end
-    end
-
     protected
 
     def config
@@ -80,6 +64,22 @@ module ConfigPlus
           h or h.is_a?(Hash)
         self::Merger.merge(hsh, h)
       }
+    end
+
+    def included(base)
+      method_name = self.config.config_method
+      return unless method_name
+      own = self::Helper.config_for(base, self.root)
+      inheritance = inherited_config_of(base)
+
+      [base, base.singleton_class].each do |obj|
+        obj.instance_eval do
+          config = inheritance ?
+            ::ConfigPlus::Merger.merge(inheritance, own || {}) : own
+          config = ::ConfigPlus::Node.new(config)
+          define_method method_name, -> { config }
+        end
+      end
     end
   end
 end
