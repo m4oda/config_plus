@@ -20,17 +20,17 @@ foo:
 
 ```ruby
 ConfigPlus.generate(from: '/path/to/configuration/file.yml')
-ConfigPlus.root[:foo][:baa][:baz]
-#=> {"spam"=>123, "ham"=>"abc"}
+ConfigPlus.root.foo.baa.baz.spam
+#=> 123
 
-ConfigPlus.root['foo']['baa']['baz']
-#=> {"spam"=>123, "ham"=>"abc"}
+ConfigPlus.root['foo']['baa']['baz']['spam']
+#=> 123
 
-ConfigPlus.root.foo.baa.baz
-#=> {"spam"=>123, "ham"=>"abc"}
+ConfigPlus.root[:foo][:baa][:baz][:spam]
+#=> 123
 
-ConfigPlus.root.get('foo.baa.baz')
-#=> {"spam"=>123, "ham"=>"abc"}
+ConfigPlus.root.get('foo.baa.baz.spam')
+#=> 123
 ```
 
 メソッド風のアクセスには多少の制限があります。
@@ -41,29 +41,46 @@ ConfigPlus.root.get('foo.baa.baz')
 おおよそ `Hash` のメソッドを上書きできない（正確には `ConfigPlus::Node`
 のメソッドを上書きできない）、ということになります。
 
-自動マッピング
---------------------------------------------------
-YAML の構造と同じパスを持つクラス（上記の場合であれば `Foo::Baa::Baz` というクラス）がある場合、
-次のようにして設定情報にアクセスすることもできます。
+なお、`ConfigPlus.generate from:` にディレクトリパスを指定すると、
+指定したディレクトリを再帰的に検索して YAML ファイルを読み込みます。
 
 ```ruby
-module Foo
-  module Baa
-    class Baz
-      include ConfigPlus
-    end
+ConfigPlus.generate(from: '/path/to/configuration/directory')
+```
+
+ディレクトリパスやファイルパスを複数指定する場合は配列を使います。
+
+```ruby
+ConfigPlus.generate(from: ['/path/to/directory1', '/path/to/file1.yml'])
+```
+
+自動マッピング
+--------------------------------------------------
+YAML の構造と同じパスを持つクラスがある場合、
+次のようにして設定情報にアクセスすることもできます。
+
+```yaml
+fizz:
+  buzz:
+    spam: bacon
+    ham: sausage
+```
+
+```ruby
+ConfigPlus.generate(from: '/path/to/configuration/file.yml')
+
+module Fizz
+  class Buzz
+    include ConfigPlus
   end
 end
 
-Foo::Baa::Baz.config
-#=> {"spam"=>123, "ham"=>"abc"}
+Fizz::Buzz.config.ham
+#=> "sausage"
 
-Foo::Baa::Baz.config.spam
-#=> 123
-
-baz = Foo::Baa::Baz.new
-baz.config.ham
-#=> "abc"
+buzz = Fizz::Buzz.new
+buzz.config.spam
+#=> "bacon"
 ```
 
 `ConfigPlus` を `include` することで、クラスメソッドとインスタンスメソッドに
@@ -86,23 +103,23 @@ baz.config.ham
 # sample-00.yml
 sample:
   setting_a:
-    spam: spam-00
-    ham: ham-00
-    egg: egg-00
+    spam: bacon
+    ham: sausage
+    egg: baked beans
 ```
 
 ```yml
 # sample-01.yml
 sample:
   setting_a:
-    ham: ham-01
+    ham: spam
 ```
 
 `sample-00.yml` がベースとなり、そこに `sample-01.yml` が上書きされて読み込まれます。
 
 ```ruby
 Sample::SettingA.config
-#=> {"spam"=>"spam-00", "ham"=>"ham-01", "egg"=>"egg-00"}
+#=> {"spam"=>"bacon", "ham"=>"spam", "egg"=>"baked beans"}
 ```
 
 その他
