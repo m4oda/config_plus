@@ -50,7 +50,7 @@ module ConfigPlus
     #
     def load
       hash = config.loader.load
-      @root = self::Node.new(hash)
+      @root = config.node_model.new(hash)
     end
 
     def inherited_config_of(klass)
@@ -72,11 +72,12 @@ module ConfigPlus
       own = self::Helper.config_for(base, self.root)
       inheritance = inherited_config_of(base)
 
+      node_model = config.node_model
       [base, base.singleton_class].each do |obj|
         obj.instance_eval do
           config = inheritance ?
             ::ConfigPlus::Merger.merge(inheritance, own || {}) : own
-          config = ::ConfigPlus::Node.new(config)
+          config = node_model.new(config)
           define_method method_name, -> { config }
         end
       end

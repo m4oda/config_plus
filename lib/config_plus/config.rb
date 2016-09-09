@@ -3,6 +3,7 @@ module ConfigPlus
     attr_accessor :config_method,
                   :extension,
                   :namespace,
+                  :node_model,
                   :root_dir,
                   :source
     attr_reader :version
@@ -14,6 +15,7 @@ module ConfigPlus
       @extension = nil
       @loader_logic = :default
       @namespace = nil
+      @node_model = Node
       @root_dir = nil
       @source = nil
     end

@@ -6,7 +6,7 @@ module ConfigPlus
         return configs.first if configs.size <= 1
 
         if configs.all? {|c| c.is_a? Hash }
-          configs.inject(::ConfigPlus::Node.new) {|h, conf|
+          configs.inject(config.class.new) {|h, conf|
             ::ConfigPlus::Merger.merge(h, conf)
           }
         else
