@@ -11,6 +11,6 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/m4oda/config_plus'
   s.license       = 'MIT'
 
-  s.required_ruby_version = '>= 2.0'
+  s.required_ruby_version = '>= 1.9.2'
   s.add_development_dependency 'rspec', '~> 3.4'
 end

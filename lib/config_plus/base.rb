@@ -27,9 +27,9 @@ module ConfigPlus
     #
     #  ConfigPlus.generate(from: '/path/to/yaml/file.yml')
     #
-    def generate(from: nil, **properties)
-      config.source = from if from
-      properties.each do |k, v|
+    def generate(options={})
+      config.source = options.delete(:from) or options.delete('from')
+      options.each do |k, v|
         attr = "#{k}="
         config.public_send(attr, v) if config.respond_to? attr
       end
@@ -78,7 +78,7 @@ module ConfigPlus
           config = inheritance ?
             ::ConfigPlus::Merger.merge(inheritance, own || {}) : own
           config = node_model.new(config)
-          define_method method_name, -> { config }
+          define_method method_name, lambda { config }
         end
       end
     end

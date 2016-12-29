@@ -25,7 +25,7 @@ RSpec.describe ConfigPlus::Node, '#[]' do
     context 'with the key typed as String' do
       it 'returns a value associated with the key' do
         actual = node['1']
-        expect(actual).to eq Hash(2 => 123)
+        expect(actual).to eq 2 => 123
       end
     end
   end

@@ -17,8 +17,7 @@ module ConfigPlus
       def underscore(name)
         return name.underscore if name.respond_to?(:underscore)
 
-        name.gsub(/::/, '.')
-          .gsub(/((\A|\b)([A-Z]+))|([A-Z]+)/) do
+        name.gsub(/::/, '.').gsub(/((\A|\b)([A-Z]+))|([A-Z]+)/) do
           next $3.downcase if $3
           "_#{$4.downcase}"
         end
@@ -26,8 +25,8 @@ module ConfigPlus
 
       def classify(name)
         return name.classify if name.respond_to?(:classify)
-        name.to_s.gsub(/\/+/, '::')
-          .gsub(/_?([a-z]+)/) { $1.capitalize }
+        name.to_s.gsub(/\/+/, '::').
+          gsub(/_?([a-z]+)/) { $1.capitalize }
       end
 
       private

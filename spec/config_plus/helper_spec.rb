@@ -53,7 +53,7 @@ RSpec.describe ConfigPlus::Helper, '.config_for' do
 
     it 'returns a value associated with the class named key' do
       actual = described_class.config_for(klass, node)
-      expect(actual).to eq Hash('a' => 123)
+      expect(actual).to eq 'a' => 123
     end
   end
 
@@ -73,7 +73,7 @@ RSpec.describe ConfigPlus::Helper, '.config_for' do
 
     it 'returns a value associated with the class named key' do
       actual = described_class.config_for(klass, node)
-      expect(actual).to eq Hash('toto' => 1, 'titi' => 2)
+      expect(actual).to eq 'toto' => 1, 'titi' => 2
     end
   end
 end

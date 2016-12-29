@@ -44,7 +44,7 @@ module ConfigPlus
       return if respond_to?(method_name) or
         private_methods.include?(method_name.to_sym)
       singleton_class.class_eval do
-        define_method method_name, -> { self[method_name] }
+        define_method method_name, lambda { self[method_name] }
       end
     end
   end

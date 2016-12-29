@@ -13,9 +13,11 @@ RSpec.describe ConfigPlus, '.included' do
 
       context "when there is SettingC class that includes SettingA and SettingB" do
         before do
-          Object.const_set(:SettingC, Class.new).
-            include(SettingA).include(SettingB).
-            include(ConfigPlus)
+          Object.const_set(:SettingC, Class.new).instance_eval do
+            include SettingA
+            include SettingB
+            include ConfigPlus
+          end
         end
 
         after { Object.class_eval { remove_const :SettingC } }

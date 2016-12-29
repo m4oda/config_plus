@@ -2,7 +2,7 @@ RSpec.shared_context 'when loading sample-4' do
   let(:root_dir) { File.expand_path('../../..', __FILE__) }
 
   let(:configuration_of_sample4) do
-    ->(config) do
+    lambda do |config|
       config.root_dir = root_dir
       config.source = 'spec/fixtures/sample-4.yml'
     end
@@ -113,12 +113,12 @@ RSpec.shared_examples 'configuration of SettingD' do
 end
 
 RSpec.shared_context "when a class includes ConfigPlus" do |klass|
-  before { Object.const_set(klass, Class.new).include ConfigPlus }
+  before { Object.const_set(klass, Class.new).instance_eval { include ConfigPlus } }
   after { Object.class_eval { remove_const klass } }
 end
 
 RSpec.shared_context "when a module includes ConfigPlus" do |mod|
-  before { Object.const_set(mod, Module.new).include ConfigPlus }
+  before { Object.const_set(mod, Module.new).instance_eval { include ConfigPlus } }
   after { Object.class_eval { remove_const mod } }
 end
 
@@ -126,7 +126,7 @@ RSpec.shared_context "when Class A that inherits Class B includes ConfigPlus" do
   before do
     parent = Object.const_get(class_b)
     klass = Class.new(parent)
-    Object.const_set(class_a, klass).include ConfigPlus
+    Object.const_set(class_a, klass).instance_eval { include ConfigPlus }
   end
 
   after { Object.class_eval { remove_const class_a } }
@@ -136,8 +136,8 @@ RSpec.shared_context "when Class A that includes Module B includes ConfigPlus" d
   before do
     mod = Object.const_get(module_b)
     klass = Class.new
-    klass.include(mod)
-    Object.const_set(class_a, klass).include ConfigPlus
+    klass.instance_eval { include(mod) }
+    Object.const_set(class_a, klass).instance_eval { include ConfigPlus }
   end
 
   after { Object.class_eval { remove_const class_a } }
