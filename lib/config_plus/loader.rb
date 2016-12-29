@@ -18,7 +18,7 @@ module ConfigPlus
     protected
 
     def loader_logic
-      @loader_logic ||= @config.loader_logic.new(@config)
+      @loader_logic ||= @config.loader_logic.new(@config.extension)
     end
 
     def source_paths

@@ -1,19 +1,24 @@
 require 'yaml'
 
 module ConfigPlus
+  # This loader reads configuration from the specified
+  # a YAML file with its ++load_from++ method.
+  # When a directory is specified this recurses a file
+  # tree and reads all YAML files.
+  #
   class DefaultLoaderLogic
-    def initialize(config)
-      @config = config
-    end
-
-    def extension
-      @config.extension || [:yml, :yaml]
+    def initialize(extension)
+      @extension = extension || [:yml, :yaml]
     end
 
     def load_from(path)
       return load_file(path) if File.file?(path)
       load_dir(path)
     end
+
+    private
+
+    attr_reader :extension
 
     def load_file(filepath)
       content = open(filepath).read
