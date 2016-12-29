@@ -30,8 +30,11 @@ module ConfigPlus
     def generate(options={})
       config.source = options.delete(:from) or options.delete('from')
       options.each do |k, v|
-        attr = "#{k}="
-        config.public_send(attr, v) if config.respond_to? attr
+        if config.has_property?(k)
+          config.property_set(k, v)
+        else
+          raise "Unknown configuration property `#{k}'"
+        end
       end
       load
     end
