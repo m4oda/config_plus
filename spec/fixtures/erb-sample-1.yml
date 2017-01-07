@@ -1,0 +1,6 @@
+spam:
+  ham:
+    egg:
+      foo: <%= (1..10).inject(:+) %>
+      baa: <%= (5..15).inject(:+) %>
+      baz: <%= (10..20).inject(:+) %>
