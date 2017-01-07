@@ -12,6 +12,7 @@ module ConfigPlus
     end
 
     def load_from(path)
+      raise Errno::ENOENT, "No such file or directory: `#{path}'" unless File.exist?(path)
       return load_file(path) if File.file?(path)
       load_dir(path)
     end
