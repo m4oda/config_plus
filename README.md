@@ -48,6 +48,25 @@ ConfigPlus.generate(from: ['/path/to/directory1', '/path/to/file1.yml'])
 ```
 
 
+YAML with ERB tags
+------------------------------------------------------------
+`ConfigPlus` can evaluate ERB tags when you add `loader_logic` setting.
+For example, when there is a such YAML file:
+
+```yaml
+abc:
+  foo: <%= (1..10).inject(&:+) %>
+```
+
+You can get it with the following way:
+
+```ruby
+ConfigPlus.generate(from: '/path/to/configuration/file.yml', loader_logic: :erb_yaml)
+ConfigPlus.abc.foo
+#=> 55
+```
+
+
 Auto Mapping
 ------------------------------------------------------------
 When data structure of loaded YAML and class structure of your
@@ -139,6 +158,9 @@ Properties you can set are following:
     relative path as `source`
 * `source`
   * a file path or a directory path or an array of them
+* `loader_logic`
+  * logic to load YAML files. When you specify `erb_yaml`
+    ERB tags can be evaluated
 
 
 License

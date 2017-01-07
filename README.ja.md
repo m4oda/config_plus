@@ -54,6 +54,25 @@ ConfigPlus.generate(from: '/path/to/configuration/directory')
 ConfigPlus.generate(from: ['/path/to/directory1', '/path/to/file1.yml'])
 ```
 
+ERB タグを含む YAML の読み込み
+--------------------------------------------------
+`loader_logic` に `erb_yaml` を指定すると、ERB タグを解釈して読み込むことができます。
+
+たとえばこのような YAML ファイルがあった場合、
+
+```yaml
+abc:
+  foo: <%= (1..10).inject(&:+) %>
+```
+
+次のようになります。
+
+```ruby
+ConfigPlus.generate(from: 'path/to/configuration/file.erb.yml', loader_logic: :erb_yaml)
+ConfigPlus.abc.foo
+#=> 55
+```
+
 自動マッピング
 --------------------------------------------------
 YAML の構造と同じパスを持つクラスがある場合、
@@ -148,6 +167,7 @@ end
 | `namespace`     | 使用するネームスペース                                               |                   |
 | `root_dir`      | `source` で指定するパスの親ディレクトリのパス                        |                   |
 | `source`        | 設定ファイル、またはそれが格納されているディレクトリのパス           |                   |
+| `loader_logic`  | 設定ファイルの読み込みロジックの設定                                 | `default`         |
 
 ライセンス
 --------------------------------------------------
