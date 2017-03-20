@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe ConfigPlus::ErbYamlLoaderLogic, '#load_from' do
   let(:instance) { described_class.new(nil) }
 
-  context "call with a path to `erb-sample-1.yml' file" do
+  context "called with a path to `erb-sample-1.yml' file" do
     let(:path) { "spec/fixtures/erb-sample-1.yml" }
 
     let(:expected_hash) do

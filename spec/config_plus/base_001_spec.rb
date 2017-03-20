@@ -2,12 +2,11 @@ require 'spec_helper'
 require 'support/support_for_sample_4'
 
 RSpec.describe ConfigPlus, '.included' do
-
-  context 'with setting to load sample-4' do
+  context "with setting to load `sample-4'" do
     include_context 'when loading sample-4'
     before { described_class.configure &configuration_of_sample4 }
 
-    context "when there is SettingB class that inherits SettingA" do
+    context "when included by SettingB class that inherits SettingA" do
       include_context "when a class includes ConfigPlus", :SettingA
       include_context "when Class A that inherits Class B includes ConfigPlus", :SettingB, :SettingA
 

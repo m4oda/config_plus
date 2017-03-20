@@ -14,7 +14,7 @@ RSpec.describe ConfigPlus, '.included' do
 
     before { described_class.configure &configuration }
 
-    context "when there is Spam class that includes ConfigPlus" do
+    context "when included by Spam class that includes ConfigPlus" do
       before { Object.const_set(:Spam, Class.new).instance_eval { include ConfigPlus } }
       after { Object.class_eval { remove_const :Spam } }
 
@@ -43,7 +43,7 @@ RSpec.describe ConfigPlus, '.included' do
       end
     end
 
-    context "when there is Spam::Ham class that includes ConfigPlus" do
+    context "when included by Spam::Ham class that includes ConfigPlus" do
       before do
         mod = Object.const_set(:Spam, Module.new)
         mod.const_set(:Ham, Class.new).instance_eval { include ConfigPlus }

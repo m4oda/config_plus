@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe ConfigPlus::DefaultLoaderLogic, '#load_from' do
   let(:instance) { described_class.new(nil) }
 
-  context "call with a path to `sample-1.yml' file" do
+  context "called with a path to `sample-1.yml' file" do
     let(:path) { "spec/fixtures/sample-1.yml" }
 
     let(:expected_hash) do
@@ -26,7 +26,7 @@ RSpec.describe ConfigPlus::DefaultLoaderLogic, '#load_from' do
     end
   end
 
-  context "call with a path to `sample-2' directory" do
+  context "called with a path to `sample-2' directory" do
     let(:path) { "spec/fixtures/sample-2" }
 
     let(:expected_hash) do
