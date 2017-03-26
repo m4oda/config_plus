@@ -14,11 +14,11 @@ module ConfigPlus
     end
 
     def initialize
-      self.class.default_properties.each do |k, v|
+      props = self.class.default_properties.each do |k, v|
         instance_variable_set("@#{k}", v)
       end
 
-      setup_attrs
+      setup_attrs(props.keys)
     end
 
     # returns a new loader instance
@@ -51,12 +51,10 @@ module ConfigPlus
 
     private
 
-    def setup_attrs
-      vars = instance_variables.map {|v| v.to_s[1..-1].to_sym }
-
+    def setup_attrs(attr_names)
       singleton_class.instance_eval do
-        attr_writer *vars
-        attr_reader *(vars - instance_methods)
+        attr_writer *attr_names
+        attr_reader *(attr_names - instance_methods)
       end
     end
   end
