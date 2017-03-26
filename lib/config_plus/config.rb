@@ -14,7 +14,10 @@ module ConfigPlus
     end
 
     def initialize
-      @properties = self.class.default_properties
+      self.class.default_properties.each do |k, v|
+        instance_variable_set("@#{k}", v)
+      end
+
       setup_attrs
     end
 
@@ -25,10 +28,9 @@ module ConfigPlus
 
     # returns loader class specified by +loader_logic+ property
     def loader_logic
-      setting = properties[:loader_logic]
-      return setting if setting.is_a?(Class)
+      return @loader_logic if @loader_logic.is_a?(Class)
 
-      name = ::ConfigPlus::Helper.classify(setting.to_s)
+      name = ::ConfigPlus::Helper.classify(@loader_logic.to_s)
       name = "#{name}LoaderLogic"
       raise "Unknown loader logic named `#{name}'" unless
         ::ConfigPlus::const_defined?(name)
@@ -40,23 +42,21 @@ module ConfigPlus
     end
 
     def has_property?(name)
-      properties.keys.include?(name.to_sym)
+      instance_variable_defined?("@#{name}")
     end
 
     def property_set(name, value)
-      properties[name.to_sym] = value
+      instance_variable_set("@#{name}", value)
     end
 
     private
 
-    attr_reader :properties
-
     def setup_attrs
-      singleton_class.instance_exec(methods, properties) do |used, props|
-        props.keys.each do |nm|
-          define_method "#{nm}=", ->(val) { property_set(nm, val) }
-          define_method nm, -> { properties[nm] } unless used.include?(nm)
-        end
+      vars = instance_variables.map {|v| v.to_s[1..-1].to_sym }
+
+      singleton_class.instance_exec(methods) do |used|
+        attr_writer *vars
+        attr_reader *(vars - used)
       end
     end
   end
