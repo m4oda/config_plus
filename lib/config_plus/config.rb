@@ -54,9 +54,9 @@ module ConfigPlus
     def setup_attrs
       vars = instance_variables.map {|v| v.to_s[1..-1].to_sym }
 
-      singleton_class.instance_exec(methods) do |used|
+      singleton_class.instance_eval do
         attr_writer *vars
-        attr_reader *(vars - used)
+        attr_reader *(vars - instance_methods)
       end
     end
   end
