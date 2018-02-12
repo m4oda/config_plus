@@ -1,5 +1,11 @@
+require 'forwardable'
+
 module ConfigPlus
   class Node
+    extend Forwardable
+
+    def_delegators :node, :keys, :values, :values_at, :inspect
+
     def initialize(hash = nil)
       @node = {}
       self.merge!(hash) if hash
