@@ -11,7 +11,5 @@ module ConfigPlus
   autoload :Node, 'config_plus/node'
   autoload :Single, 'config_plus/single'
 
-  class << self
-    include Base
-  end
+  extend Base
 end
