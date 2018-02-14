@@ -64,7 +64,7 @@ module ConfigPlus
     protected
 
     def config
-      @config ||= self::Config.new
+      @config ||= ::ConfigPlus::Config.new
     end
 
     private
@@ -85,16 +85,16 @@ module ConfigPlus
         clazz.ancestors.include?(self)
       }.reverse.each.inject({}) {|hsh, clazz|
         h = clazz.public_send(self.config.config_method)
-        h = self::Helper.config_for(clazz, self.root) unless
+        h = ::ConfigPlus::Helper.config_for(clazz, self.root) unless
           h or h.is_a?(Hash)
-        self::Merger.merge(hsh, h)
+        ::ConfigPlus::Merger.merge(hsh, h)
       }
     end
 
     def included(base)
       method_name = self.config.config_method
       return unless method_name
-      own = self::Helper.config_for(base, self.root)
+      own = ::ConfigPlus::Helper.config_for(base, self.root)
       inheritance = inherited_config_of(base)
 
       node_model = config.node_model
