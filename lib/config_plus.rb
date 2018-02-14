@@ -67,7 +67,7 @@ module ConfigPlus
       hsh = conf.loader.load
       conf.node_model.new(hsh).tap do |tree|
         [klass.singleton_class, klass].each do |obj|
-          obj.instance_eval { define_method meth, ->() { tree } }
+          obj.instance_eval { define_method meth, lambda { tree } }
         end
       end
     end
