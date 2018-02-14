@@ -126,6 +126,29 @@ Sample::SettingA.config
 #=> {"spam"=>"bacon", "ham"=>"spam", "egg"=>"baked beans"}
 ```
 
+Load Individually
+------------------------------------------------------------
+Basically, `ConfigPlus` loads the specified configuration files
+and merges all of the data into a single hash `ConfigPlus.root`.
+
+But if you want to get the data in an other hash, you can do by
+the following way:
+
+```ruby
+class Foo
+  extend ConfigPlus::Single
+  generate_config '/path/to/configuration/file.yml', as: :conf
+end
+
+Foo.conf[:foo]
+# => a value of `foo'
+
+ConfigPlus.root
+# => nil
+```
+
+You can specify the method name for access to configuration data
+by the option `as`, which default value is `config`.
 
 Others
 ------------------------------------------------------------
