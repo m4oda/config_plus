@@ -1,7 +1,6 @@
 require 'config_plus/version'
 
 module ConfigPlus
-  autoload :Attachment, 'config_plus/attachment'
   autoload :Base, 'config_plus/base'
   autoload :Config, 'config_plus/config'
   autoload :DefaultLoaderLogic, 'config_plus/default_loader_logic'
@@ -10,6 +9,7 @@ module ConfigPlus
   autoload :Loader, 'config_plus/loader'
   autoload :Merger, 'config_plus/merger'
   autoload :Node, 'config_plus/node'
+  autoload :Single, 'config_plus/single'
 
   class << self
     include Base

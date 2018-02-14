@@ -141,6 +141,27 @@ Sample::SettingA.config
 #=> {"spam"=>"bacon", "ham"=>"spam", "egg"=>"baked beans"}
 ```
 
+個別ロード
+--------------------------------------------------
+`ConfigPlus` の基本動作では、指定された設定ファイル群の情報を `ConfigPlus.root`
+に読み込みます。つまり、すべての情報は基本的にひとつのオプジェクトで管理されます。
+
+これはシンプルな方法ですが、個別に読み込み、管理したいということもあるかもしれません。
+次のようにすると、個別に設定情報を持たせることができます。
+
+```ruby
+class Foo
+  extend ConfigPlus::Single
+  generate_config '/path/to/configuration/file.yml', as: :conf
+end
+
+Foo.conf[:foo]
+# => foo の値
+
+ConfigPlus.root
+# => nil
+```
+
 その他
 --------------------------------------------------
 `ConfigPlus` の動作は設定で変更できます。

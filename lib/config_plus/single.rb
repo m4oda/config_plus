@@ -1,10 +1,10 @@
 module ConfigPlus
-  module Attachment
+  module Single
     private
 
-    def attach(source, options={})
+    def generate_config(source, options={})
       opt = options.merge(to: self) unless options.key?(:to) or options.key('to')
-      ::ConfigPlus.attach(source, opt || options)
+      ::ConfigPlus.single_generate(source, opt || options)
     end
   end
 end

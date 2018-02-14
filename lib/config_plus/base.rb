@@ -39,7 +39,7 @@ module ConfigPlus
       load
     end
 
-    def attach(source, options={})
+    def single_generate(source, options={})
       meth = [:as, :config_method].lazy.map {|nm|
         options.delete(nm) || options.delete(nm.to_s)
       }.find {|v| v } || :config
