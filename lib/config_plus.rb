@@ -51,14 +51,16 @@ module ConfigPlus
     end
 
     def attach(source, options={})
-      meth = options.delete(:as) || options.delete('as') || :config
+      meth = [:as, :config_method].lazy.map {|nm|
+        options.delete(nm) || options.delete(nm.to_s)
+      }.find {|v| v } || :config
       klass = options.delete(:to) || options.delete('to')
       raise unless klass
 
       conf = self::Config.new
       conf.source = source
       options.each do |k, v|
-        conf.has_propety?(k) and conf.property_set(k, v) or
+        conf.has_property?(k) and conf.property_set(k, v) or
           raise "Unknown configuration property `#{k}'"
       end
 
