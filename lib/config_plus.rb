@@ -1,6 +1,7 @@
 require 'config_plus/version'
 
 module ConfigPlus
+  autoload :Attachment, 'config_plus/attachment'
   autoload :Config, 'config_plus/config'
   autoload :DefaultLoaderLogic, 'config_plus/default_loader_logic'
   autoload :ErbYamlLoaderLogic, 'config_plus/erb_yaml_loader_logic'
@@ -38,7 +39,7 @@ module ConfigPlus
     #  ConfigPlus.generate(from: '/path/to/yaml/file.yml')
     #
     def generate(options={})
-      config.source = options.delete(:from) or options.delete('from')
+      config.source = options.delete(:from) || options.delete('from')
       options.each do |k, v|
         if config.has_property?(k)
           config.property_set(k, v)
@@ -47,6 +48,26 @@ module ConfigPlus
         end
       end
       load
+    end
+
+    def attach(source, options={})
+      meth = options.delete(:as) || options.delete('as') || :config
+      klass = options.delete(:to) || options.delete('to')
+      raise unless klass
+
+      conf = self::Config.new
+      conf.source = source
+      options.each do |k, v|
+        conf.has_propety?(k) and conf.property_set(k, v) or
+          raise "Unknown configuration property `#{k}'"
+      end
+
+      hsh = conf.loader.load
+      conf.node_model.new(hsh).tap do |tree|
+        [klass.singleton_class, klass].each do |obj|
+          obj.instance_eval { define_method meth, ->() { tree } }
+        end
+      end
     end
 
     protected
