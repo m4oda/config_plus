@@ -4,7 +4,7 @@ module ConfigPlus
   class Node
     extend Forwardable
 
-    def_delegators :node, :keys, :values, :values_at, :inspect
+    def_delegators :node, :keys, :values, :values_at, :has_key?, :key?, :inspect
 
     def initialize(hash = nil)
       @node = {}
@@ -15,10 +15,16 @@ module ConfigPlus
       value = node.fetch(key.to_s, nil)
       value = node.fetch(key.to_i, nil) if
         value.nil? and key.to_s =~ /\A\d+\z/
-      return value unless value.is_a?(Hash)
       return value if value.is_a?(self.class)
 
-      node.store(key.to_s, self.class.new(value))
+      case value
+      when Hash
+        node.store(key.to_s, self.class.new(value))
+      when Array
+        node.store(key.to_s, convert_to_value(value))
+      else
+        value
+      end
     end
 
     def get(path)
@@ -53,6 +59,12 @@ module ConfigPlus
     private
 
     attr_reader :node
+
+    def convert_to_value(array)
+      array.map do |v|
+        v.is_a?(Hash) ? self.class.new(v) : v
+      end
+    end
 
     def define_accessor(method_name)
       return unless method_name.is_a?(String) or
