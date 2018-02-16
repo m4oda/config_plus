@@ -7,7 +7,7 @@ module ConfigPlus
 
     def_delegators :node, :keys, :values, :values_at, :has_key?, :key?, :each, :inspect
 
-    def initialize(collection = nil)
+    def initialize(collection)
       @node = generate_node(collection)
       self.merge!(collection) if hash
     end

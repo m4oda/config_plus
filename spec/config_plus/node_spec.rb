@@ -263,3 +263,74 @@ RSpec.describe ConfigPlus::Node, '#get' do
     end
   end
 end
+
+RSpec.describe ConfigPlus::Node, '#merge' do
+  context 'When the node is initialized with a hash' do
+    let(:hash) { {'foo' => 'abc'} }
+    let(:node) { described_class.new(hash) }
+
+    context 'with another hash' do
+      let(:another_hash) { {'baa' => 'xyz'} }
+
+      it 'returns a new merged node object' do
+        actual = node.merge(another_hash)
+        expect(actual).to eq Hash('foo' => 'abc', 'baa' => 'xyz')
+      end
+
+      it 'does not alter the node itself' do
+        node.merge(another_hash)
+        expect(node).to eq hash
+      end
+
+      it 'does not have new methods whose names are the merged keys' do
+        node.merge(another_hash)
+        expect(node).to respond_to :foo
+        expect(node).not_to respond_to :baa
+      end
+
+      describe 'the object returned' do
+        it 'has new methods whose names are the merged keys' do
+          actual = node.merge(another_hash)
+          expect(actual).to respond_to :foo
+          expect(actual).to respond_to :baa
+        end
+      end
+    end
+
+    context 'with an array' do
+      let(:array) { [{'foo' => 'abc'}] }
+
+      it 'raises a Runtime Error' do
+        expect{ node.merge(array) }.to raise_error(RuntimeError)
+      end
+    end
+  end
+
+  context 'WHen the node is initialized with an array' do
+    let(:array) { [{'foo' => 'abc', 'baa' => 'xyz'}] }
+    let(:node) { described_class.new(array) }
+
+    context 'with another array' do
+      let(:another_array) { [{'pee' => 'one', 'kaa' => 'two', 'boo' => 'three'}] }
+
+      it 'returns a new concatinated node object' do
+        actual = node.merge(another_array)
+        expected = array + another_array
+        expect(actual).to eq expected
+      end
+
+      it 'does not alter the node itself' do
+        node.merge(another_array)
+        expect(node).to eq array
+      end
+    end
+
+    context 'with a hash' do
+      let(:hash) { {'baz' => '123'} }
+
+      it 'raises a Runtime Error' do
+        expect{ node.merge(hash) }.to raise_error(RuntimeError)
+      end
+    end
+  end
+end
