@@ -100,8 +100,8 @@ module ConfigPlus
       node_model = config.node_model
       [base, base.singleton_class].each do |obj|
         obj.instance_eval do
-          config = inheritance ?
-            ::ConfigPlus::Merger.merge(inheritance, own || {}) : own
+          config = inheritance.empty? ? own :
+            ::ConfigPlus::Merger.merge(inheritance, own || {})
           config = node_model.new(config)
           define_method method_name, lambda { config }
         end
