@@ -5,20 +5,33 @@ module ConfigPlus
     extend Forwardable
     include Enumerable
 
-    def_delegators :node, :keys, :values, :values_at, :has_key?, :key?, :each, :inspect
+    def_delegators :node,
+                   :array?,
+                   :each,
+                   :each_key,
+                   :each_pair,
+                   :hash?,
+                   :keys,
+                   :key?,
+                   :has_key?,
+                   :to_a,
+                   :to_hash,
+                   :to_s,
+                   :value?,
+                   :values,
+                   :values_at
 
     def initialize(collection)
-      initialize_node(collection)
+      @node = ::ConfigPlus::Collection.generate_for(collection)
       self.merge!(collection) if hash
     end
 
     def [](key)
-      value = node.fetch(key.to_i, nil) if key.to_s =~ /\A\d+\z/
-      value ||= node.fetch(key.to_s, nil) unless self.array?
+      value = node[key]
       return value if value.is_a?(self.class)
 
       case value
-      when Hash, Array
+      when Hash, Array, ::ConfigPlus::Collection
         node.store(key.to_s, self.class.new(value))
       else
         value
@@ -32,70 +45,33 @@ module ConfigPlus
       self[key].get(rest)
     end
 
+    def dig(*keys)
+      key = keys.first
+      rest = keys[1..-1]
+      return self[key] if rest.empty?
+      return nil unless self[key]
+      self[key].dig(rest)
+    end
+
     def merge(collection)
-      execute_merge(
-        collection,
-        hash: lambda {|data| self.class.new(node.merge(collection)) },
-        array: lambda {|data| self.class.new(node + data.map(&method(:convert))) }
-      )
+      self.class.new(node.merge(convert(collection)))
     end
 
     def ==(object)
-      node == data_of(object)
-    end
-
-    def array?
-      !!@array.nil?
-    end
-
-    def hash?
-      !!@hash.nil?
+      node.data == data_of(object)
     end
 
     protected
 
-    def node
-      @hash || @array
-    end
+    attr_reader :node
 
     def merge!(collection)
-      execute_merge(
-        collection,
-        hash: lambda {|data|
-          node.merge!(data).tap {
-            data.keys.each {|k| define_accessor(k) }
-          }
-        },
-        array: lambda {|data|
-          node.concat(data.map(&method(:convert))).tap {
-            node.each_with_index {|_, n| define_accessor(n.to_s) }
-          }
-        }
-      )
+      node.merge!(convert(collection)).tap {
+        node.keys.each {|k| define_accessor(k) }
+      }
     end
 
     private
-
-    def initialize_node(data)
-      case data
-      when Hash
-        @hash = {}
-      when Array
-        @array = []
-      when self.class
-        initialize_node(data.node)
-      else
-        raise "Cannot accept `#{data.class}' data"
-      end
-    end
-
-    def execute_merge(collection, logic)
-      data = data_of(collection)
-      raise if node.class != data.class
-
-      key = node.class.name.downcase.to_sym
-      logic[key].call(data)
-    end
 
     def data_of(collection)
       collection.is_a?(self.class) ? collection.node : collection
@@ -103,19 +79,21 @@ module ConfigPlus
 
     def convert(collection)
       case collection
-      when Hash, Array then self.class.new(collection)
+      when Array
+        collection.map do |data|
+          data.is_a?(Array) || data.is_a?(Hash) ? self.class.new(data) : data
+        end
       else
         collection
       end
     end
 
     def define_accessor(method_name)
-      return unless method_name.is_a?(String) or
-        method_name.is_a?(Symbol)
-      return if respond_to?(method_name) or
-        private_methods.include?(method_name.to_sym)
+      name = method_name.to_s
+      return if respond_to?(name) or
+        private_methods.include?(name.to_sym)
       singleton_class.class_exec(self) do |node|
-        define_method method_name, lambda { node[method_name] }
+        define_method name, lambda { node[method_name] }
       end
     end
   end

@@ -300,8 +300,8 @@ RSpec.describe ConfigPlus::Node, '#merge' do
     context 'with an array' do
       let(:array) { [{'foo' => 'abc'}] }
 
-      it 'raises a Runtime Error' do
-        expect{ node.merge(array) }.to raise_error(RuntimeError)
+      it 'raises a TypeError' do
+        expect{ node.merge(array) }.to raise_error(TypeError)
       end
     end
   end
@@ -328,8 +328,8 @@ RSpec.describe ConfigPlus::Node, '#merge' do
     context 'with a hash' do
       let(:hash) { {'baz' => '123'} }
 
-      it 'raises a Runtime Error' do
-        expect{ node.merge(hash) }.to raise_error(RuntimeError)
+      it 'raises a TypeError' do
+        expect{ node.merge(hash) }.to raise_error(TypeError)
       end
     end
   end
