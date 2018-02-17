@@ -22,8 +22,9 @@ module ConfigPlus
                    :values_at
 
     def initialize(collection)
-      @node = ::ConfigPlus::Collection.generate_for(collection)
-      self.merge!(collection) if hash
+      data = data_of(collection)
+      @node = ::ConfigPlus::Collection.generate_for(data)
+      self.merge!(data) if hash
     end
 
     def [](key)
@@ -54,7 +55,8 @@ module ConfigPlus
     end
 
     def merge(collection)
-      self.class.new(node.merge(convert(collection)))
+      data = data_of(collection)
+      self.class.new(node.merge(convert(data)))
     end
 
     def ==(object)

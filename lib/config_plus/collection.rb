@@ -13,9 +13,6 @@ module ConfigPlus
                    :to_s,
                    :values_at
 
-    CONTAINER_CLASS = ::ConfigPlus::Node
-    private_constant :CONTAINER_CLASS
-
     def initialize(collection)
       @hash_data = nil
       @array_data = nil
@@ -167,9 +164,7 @@ module ConfigPlus
     protected
 
     def miss_match?(collection)
-      data.class != collection.class &&
-        !(collection.is_a?(self.class) ||
-          collection.is_a?(CONTAINER_CLASS))
+      data.class != collection.class && !collection.is_a?(self.class)
     end
 
     private
@@ -182,8 +177,6 @@ module ConfigPlus
         object
       when self.class
         object.data
-      when CONTAINER_CLASS
-        object.send(:node).data
       else
         raise TypeError, "#{object.class.name} could not be acceptable"
       end
@@ -191,10 +184,10 @@ module ConfigPlus
 
     class << self
       def generate_for(collection)
-        self.new(collection)
+        new(collection)
       end
 
-      protected :new
+      private :new
     end
   end
 end
