@@ -8,13 +8,13 @@ module ConfigPlus
     def_delegators :node, :keys, :values, :values_at, :has_key?, :key?, :each, :inspect
 
     def initialize(collection)
-      @node = generate_node(collection)
+      initialize_node(collection)
       self.merge!(collection) if hash
     end
 
     def [](key)
       value = node.fetch(key.to_i, nil) if key.to_s =~ /\A\d+\z/
-      value ||= node.fetch(key.to_s, nil) unless data_is_a?(Array)
+      value ||= node.fetch(key.to_s, nil) unless self.array?
       return value if value.is_a?(self.class)
 
       case value
@@ -30,6 +30,32 @@ module ConfigPlus
       return self[key] unless rest
       return nil unless self[key]
       self[key].get(rest)
+    end
+
+    def merge(collection)
+      execute_merge(
+        collection,
+        hash: lambda {|data| self.class.new(node.merge(collection)) },
+        array: lambda {|data| self.class.new(node + data.map(&method(:convert))) }
+      )
+    end
+
+    def ==(object)
+      node == data_of(object)
+    end
+
+    def array?
+      !!@array.nil?
+    end
+
+    def hash?
+      !!@hash.nil?
+    end
+
+    protected
+
+    def node
+      @hash || @array
     end
 
     def merge!(collection)
@@ -48,36 +74,18 @@ module ConfigPlus
       )
     end
 
-    def merge(collection)
-      execute_merge(
-        collection,
-        hash: lambda {|data| self.class.new(node.merge(collection)) },
-        array: lambda {|data| self.class.new(node + data.map(&method(:convert))) }
-      )
-    end
-
-    def ==(object)
-      node == data_of(object)
-    end
-
-    def data_is_a?(clazz)
-      node.is_a?(clazz)
-    end
-
-    protected
-
-    attr_reader :node
-
     private
 
-    def generate_node(collection)
-      case collection
-      when Hash then {}
-      when Array then []
+    def initialize_node(data)
+      case data
+      when Hash
+        @hash = {}
+      when Array
+        @array = []
       when self.class
-        generate_node(collection.node)
+        initialize_node(data.node)
       else
-        raise "Cannot accept `#{collection.class}' data"
+        raise "Cannot accept `#{data.class}' data"
       end
     end
 
