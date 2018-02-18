@@ -274,7 +274,7 @@ RSpec.describe ConfigPlus::Node, '#merge' do
 
       it 'returns a new merged node object' do
         actual = node.merge(another_hash)
-        expect(actual).to eq Hash('foo' => 'abc', 'baa' => 'xyz')
+        expect(actual).to eq 'foo' => 'abc', 'baa' => 'xyz'
       end
 
       it 'does not alter the node itself' do

@@ -35,14 +35,14 @@ When("we add a code block for setting:") do |string|
   ConfigPlus.configure(&block)
 end
 
-When(/^we make (\w+) class include ConfigPlus$/) do |class_name|
+When(/^we make (\w+) class include `ConfigPlus'$/) do |class_name|
   clazz = Class.new
   Object.instance_eval { const_set(class_name, clazz) }
   clazz.include ConfigPlus
   @test_classes << class_name
 end
 
-Then(/^([A-Z]\w+)\.([^\s]*) has data$/) do |classname, namechain|
+Then(/^`([A-Z]\w+)\.([^\s]*)' has data$/) do |classname, namechain|
   klass = Object.const_get(classname)
   value = namechain.split('.').inject(klass) do |obj, name|
     obj.__send__(name)
@@ -50,21 +50,19 @@ Then(/^([A-Z]\w+)\.([^\s]*) has data$/) do |classname, namechain|
   expect(value).not_to be_nil
 end
 
-Then(/^ConfigPlus.([^\s]*) has a key ``([^']*)''$/) do |namechain, keyname|
+Then(/^`ConfigPlus.([^\s]*)' has a key ``([^']*)''$/) do |namechain, keyname|
   value = namechain.split('.').inject(ConfigPlus) do |obj, name|
     obj.__send__(name)
   end
   expect(value).to have_key(keyname)
 end
 
-Then(/^ConfigPlus.([^\s]*) returns a string ``([^']*)''$/) do |namechain, string|
-  value = namechain.split('.').inject(ConfigPlus) do |obj, name|
-    obj.__send__(name)
-  end
+Then(/^`([^\s]*)' returns a string ``([^']*)''$/) do |code, string|
+  value = eval(code)
   expect(value).to eq(string)
 end
 
-Then(/^ConfigPlus.([^\s]*) returns an array data$/) do |namechain|
+Then(/^`ConfigPlus.([^\s]*)' returns an array data$/) do |namechain|
   value = namechain.split('.').inject(ConfigPlus) do |obj, name|
     obj.__send__(name)
   end
