@@ -51,7 +51,7 @@ module ConfigPlus
       rest = keys[1..-1]
       return self[key] if rest.empty?
       return nil unless self[key]
-      self[key].dig(rest)
+      self[key].dig(*rest)
     end
 
     def merge(collection)

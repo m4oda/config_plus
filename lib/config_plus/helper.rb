@@ -31,6 +31,8 @@ module ConfigPlus
 
       private
 
+      # Finds parts of data that match with a name of the specified object
+      #
       def matched_configs(object, node)
         return [] unless node
         mod = object.is_a?(Module) ? object : object.class

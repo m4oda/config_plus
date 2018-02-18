@@ -334,3 +334,120 @@ RSpec.describe ConfigPlus::Node, '#merge' do
     end
   end
 end
+
+RSpec.describe ConfigPlus::Node, '#dig' do
+  context 'initialied with a string keyed hash' do
+    let(:hash) do
+      {
+        'foo' => {
+          'baa' => {
+            'baz' => 'yes'
+          },
+        },
+      }
+    end
+
+    let(:node) { described_class.new(hash) }
+
+    context 'with first key name string' do
+      it 'returns the 1st nested hash' do
+        actual = node.dig(:foo)
+        expect(actual).to eq 'baa' => {'baz' => 'yes'}
+      end
+    end
+
+    context 'with first and second key name strings' do
+      it 'returns the 2nd nested hash' do
+        actual = node.dig(:foo, :baa)
+        expect(actual).to eq 'baz' => 'yes'
+      end
+    end
+
+    context 'with first, second and third key name strings' do
+      it 'returns the specified value' do
+        actual = node.dig(:foo, :baa, :baz)
+        expect(actual).to eq 'yes'
+      end
+    end
+
+    context 'with strings that are not included in key names' do
+      it 'returns nil' do
+        actual = node.dig(:pee, :kaa, :boo)
+        expect(actual).to be_nil
+      end
+    end
+  end
+
+  context 'initialized with a hash-array-hash data tree' do
+    let(:data) do
+      {
+        'foo' => [
+          {'baa' => 10},
+          {'baa' => 20},
+          {'baa' => 30},
+        ],
+      }
+    end
+
+    let(:node) { described_class.new(data) }
+
+    context 'with the first hash key name symbol' do
+      it 'returns the array' do
+        actual = node.dig(:foo)
+        expect(actual).to eq data['foo']
+      end
+    end
+
+    context 'with the first hash key name symbol and index number' do
+      it 'return the hash that is located at the specified index in the array' do
+        actual = node.dig(:foo, 1)
+        expect(actual).to eq 'baa' => 20
+      end
+    end
+
+    context 'with hash-key, array-index and hash-key parameters' do
+      it 'return the value specified by the parameters' do
+        actual = node.dig(:foo, 2, :baa)
+        expect(actual).to be 30
+      end
+    end
+  end
+
+  context 'initialized with an array-array-hash data' do
+    let(:data) do
+      [
+        [
+          {'foo' => 11},
+          {'baa' => 22},
+        ],
+        [
+          {'pee' => 99},
+          {'kaa' => 88},
+        ],
+      ]
+    end
+
+    let(:node) { described_class.new(data) }
+
+    context 'with the first array index number' do
+      it 'returns the array located at the index in the first array' do
+        actual = node.dig(0)
+        expect(actual).to eq data[0]
+      end
+    end
+
+    context 'with array-index and array-index parameters' do
+      it 'returns the hash located at the specified path in the data' do
+        actual = node.dig(0, 1)
+        expect(actual).to eq 'baa' => 22
+      end
+    end
+
+    context 'with array-index, array-index and hash-key parameters' do
+      it 'returns the value located at the specified path in the data' do
+        actual = node.dig(1, 0, :pee)
+        expect(actual).to be 99
+      end
+    end
+  end
+end
