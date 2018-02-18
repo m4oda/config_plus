@@ -68,8 +68,9 @@ module ConfigPlus
     attr_reader :node
 
     def merge!(collection)
-      node.merge!(convert(collection)).tap {
-        node.keys.each {|k| define_accessor(k) }
+      data = data_of(collection)
+      node.merge!(convert(data)).tap {
+        (node.hash? ? data : node).keys.each {|k| define_accessor(k) }
       }
     end
 
