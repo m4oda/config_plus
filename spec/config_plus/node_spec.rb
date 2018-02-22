@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe ConfigPlus::Node, '#[]' do
-  context 'When the node is initialized with a string keyed hash' do
+  context 'when initialized with a string keyed hash' do
     let(:node) { described_class.new('foo' => 123) }
 
     context 'with the key typed as String' do
@@ -19,7 +19,7 @@ RSpec.describe ConfigPlus::Node, '#[]' do
     end
   end
 
-  context 'When the node is initialized with a integer keyed hash' do
+  context 'when initialized with a integer keyed hash' do
     let(:node) { described_class.new(1 => {2 => 123}) }
 
     context 'with the key typed as String' do
@@ -30,7 +30,7 @@ RSpec.describe ConfigPlus::Node, '#[]' do
     end
   end
 
-  context 'When the node is initialized with a string array' do
+  context 'when initialized with a string array' do
     let(:array) { ['foo', 'baa', 'baz'] }
     let(:node) { described_class.new(array) }
 
@@ -49,7 +49,7 @@ RSpec.describe ConfigPlus::Node, '#[]' do
     end
   end
 
-  context 'When the node is initialized with a hash array' do
+  context 'when initialized with a hash array' do
     let(:array) do
       [
         {
@@ -73,7 +73,7 @@ RSpec.describe ConfigPlus::Node, '#[]' do
         expect(node[1]).to eq array[1]
       end
 
-      describe 'Data that is returned by specification of an index number' do
+      describe 'data returned by the index number' do
         context 'with the hash keys' do
           it 'returns a value' do
             expect(node[0][:author]).to eq 'Lewis Carroll'
@@ -96,7 +96,7 @@ RSpec.describe ConfigPlus::Node, '#[]' do
     end
   end
 
-  context 'When the node is initialized with an array of an array' do
+  context 'when initialized with an array of an array' do
     let(:array) do
       [
         [
@@ -142,7 +142,7 @@ RSpec.describe ConfigPlus::Node, '#[]' do
           expect(node[1][1]).to eq array[1][1]
         end
 
-        describe 'Data that is returned by specification of an index number' do
+        describe 'data returned by the index number' do
           context 'with the hash keys' do
             it 'returns a value' do
               expect(node[0][0]['author']).to eq 'Lewis Carroll'
@@ -172,7 +172,7 @@ RSpec.describe ConfigPlus::Node, '#[]' do
         expect(node['1']).to eq array[1]
       end
 
-      describe 'The nested array' do
+      describe 'the nested array' do
         it 'returns a value equals with data picked up from the array' do
           expect(node['0']['0']).to eq array[0][0]
           expect(node['0']['1']).to eq array[0][1]
@@ -211,7 +211,7 @@ end
 
 
 RSpec.describe ConfigPlus::Node, '#get' do
-  context 'When the node is initialized with a string keyed hash' do
+  context 'when initialized with a string keyed hash' do
     let(:node) do
       hash = {
         'a' => {'foo' => {'baa' => {'baz' => 'xyz'} } },
@@ -236,7 +236,7 @@ RSpec.describe ConfigPlus::Node, '#get' do
     end
   end
 
-  context 'When the node is initialized with a hash array' do
+  context 'when initialized with a hash array' do
     let(:array) do
       [
         {
@@ -265,7 +265,7 @@ RSpec.describe ConfigPlus::Node, '#get' do
 end
 
 RSpec.describe ConfigPlus::Node, '#merge' do
-  context 'When the node is initialized with a hash' do
+  context 'when initialized with a hash' do
     let(:hash) { {'foo' => 'abc'} }
     let(:node) { described_class.new(hash) }
 
@@ -306,7 +306,7 @@ RSpec.describe ConfigPlus::Node, '#merge' do
     end
   end
 
-  context 'WHen the node is initialized with an array' do
+  context 'when initialized with an array' do
     let(:array) { [{'foo' => 'abc', 'baa' => 'xyz'}] }
     let(:node) { described_class.new(array) }
 
@@ -336,7 +336,7 @@ RSpec.describe ConfigPlus::Node, '#merge' do
 end
 
 RSpec.describe ConfigPlus::Node, '#dig' do
-  context 'initialied with a string keyed hash' do
+  context 'when initialied with a string keyed hash' do
     let(:hash) do
       {
         'foo' => {
@@ -378,7 +378,7 @@ RSpec.describe ConfigPlus::Node, '#dig' do
     end
   end
 
-  context 'initialized with a hash-array-hash data tree' do
+  context 'when initialized with a hash-array-hash data tree' do
     let(:data) do
       {
         'foo' => [
@@ -413,7 +413,7 @@ RSpec.describe ConfigPlus::Node, '#dig' do
     end
   end
 
-  context 'initialized with an array-array-hash data' do
+  context 'when initialized with an array-array-hash data' do
     let(:data) do
       [
         [
